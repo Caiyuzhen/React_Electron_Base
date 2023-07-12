@@ -24,6 +24,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+	"dist": "electron-builder",
     "dev": "concurrently \"cross-env BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\""
   },
   "eslintConfig": {
@@ -45,6 +46,13 @@
     ]
   },
   "devDependencies": {
-    "electron": "^25.2.0"
+    "electron": "^25.2.0",
+    "electron-builder": "^24.4.0"
+  },
+  "build": {
+	"appId": "yourAppId",
+	"mac": {
+	  "target": "dmg"
+	}
   }
 }

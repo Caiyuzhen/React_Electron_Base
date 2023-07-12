@@ -30,7 +30,7 @@ function App() {
 				<LeftDiv>
 					<SearchFile
 						title='我的文档'
-						onSearchData={() => {console.log('搜索中')}}
+						onSearchData={(value) => {console.log(value)}} //🚀 数据来自 SearchFile 下层组件!!
 					>
 					</SearchFile>
 				</LeftDiv>

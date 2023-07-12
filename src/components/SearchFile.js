@@ -1,11 +1,11 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import search from '../../src/resource/icon/icon-search.svg'
 import close from '../../src/resource/icon/icon-close.svg'
 
 /**
  * @title {string} 标题文案
- * @onSearchData {string} 搜索的回调
+ * @onSearchData {string} 搜索的回调, 传递给上层组件 App.js
 */
 
 
@@ -47,6 +47,59 @@ const SearchFile = ({title, onSearchData}) => {
 
 	const [searchActive, setSearchActive] = useState(false) //是否是搜索状态
 	const [value, setValue] = useState('') //列表的值
+	const oInput = useRef(null) //获取 input 框的 DOM, 用于聚焦
+	
+	// 退出搜索状态
+	const closeSearch = () => {
+		setSearchActive(false)
+		//清空输入框的值
+		setValue('')
+	}
+
+
+	// 👇command + k 快捷键
+	useEffect(() => {
+		const handleKeydown = (e) => {
+		  if (e.metaKey && e.key === 'k') {
+			setSearchActive(true);
+		  }
+		}
+	  
+		document.addEventListener('keydown', handleKeydown);
+	  
+		return () => {
+		  document.removeEventListener('keydown', handleKeydown);
+		}
+	}, [])
+
+
+	// 监听键盘的操作, 回车后把 input 的 value 传递给 App.js
+	useEffect(() => {
+		const searchHandle = (e) => {
+			const { keyCode } = e
+			if(keyCode === 13 && searchActive) {//13 为回车键
+				onSearchData(value) // 👈 把输入框的数据传递给 onSearchData, onSearchData 是要传递给上层组件 App.js 的数据
+			}
+			if(keyCode === 27 && searchActive) {//27 为 esc 键
+				closeSearch()
+			}
+		}
+
+		document.addEventListener('keyup', searchHandle) // 监听键盘的操作, keyup 表示键盘按键抬起时触发
+
+		return () => { // 🚀 组件卸载（React 内部有卸载机制）后, 移除这个副作用, 避免内存泄露。 我们需要在组件卸载时清理一些副作用,比如移除事件监听,取消网络请求等。这时我们需要在useEffect中返回一个清理函数
+			document.removeEventListener('keyup', searchHandle)
+		}
+	})
+
+
+	//⚡️点击搜索后自动聚焦输入框
+	useEffect(() => {
+		if(searchActive) {
+			oInput.current.focus() 
+		}
+	}, [searchActive])
+
 
 	return (
 		<>
@@ -70,13 +123,14 @@ const SearchFile = ({title, onSearchData}) => {
 					<>
 						<SearchDiv>
 							<input 
+								ref={oInput}
 								type="text" 
 								placeholder='Search data'
 								value={value}
 								onChange={(e) => { setValue(e.target.value) }} //受控组件, 拿到 input 框的内容并保存到 value 中
 							/>
 							<span
-								onClick={() => { setSearchActive(!searchActive) }}
+								onClick={() => { closeSearch() }}
 							>	
 								<img src={ searchActive ? close : search } alt= "" style={{ width: 24 }}/>
 							</span>
