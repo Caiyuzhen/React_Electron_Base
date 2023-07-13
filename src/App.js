@@ -1,7 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import SearchFile from './components/SearchFile'
+import SearchBar from './components/SearchBar'
+import FileList from './components/FileList'
+import initFilesData from './utils/mock/initFilesData'
 
 
 // 左侧容器样式 （styled-components 语法）
@@ -28,11 +30,16 @@ function App() {
 		<div className="App container-fluid px-0">
 			<div className="row">
 				<LeftDiv>
-					<SearchFile
-						title='我的文档'
+					<SearchBar
+						title='My Files'
 						onSearchData={(value) => {console.log(value)}} //🚀 数据来自 SearchFile 下层组件!!
 					>
-					</SearchFile>
+					</SearchBar>
+
+					<FileList
+						files={initFilesData}
+					>
+					</FileList>
 				</LeftDiv>
 				<RightDiv>右侧</RightDiv>
 			</div>

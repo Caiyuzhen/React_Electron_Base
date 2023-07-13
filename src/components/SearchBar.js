@@ -43,7 +43,7 @@ const SearchDiv = styled.div.attrs({
 
 
 
-const SearchFile = ({title, onSearchData}) => { 
+const SearchBar = ({title, onSearchData}) => { 
 
 	const [searchActive, setSearchActive] = useState(false) //是否是搜索状态
 	const [value, setValue] = useState('') //列表的值
@@ -141,4 +141,4 @@ const SearchFile = ({title, onSearchData}) => {
 	)
 }
 
-export default SearchFile
+export default SearchBar
