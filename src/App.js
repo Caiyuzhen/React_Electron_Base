@@ -10,7 +10,7 @@ import initFilesData from './utils/mock/initFilesData'
 let LeftDiv = styled.div.attrs({
 	className: 'col-3 left-panel' // bootstrap 的样式
 })`
-	background-color: #bbbac9;
+	background-color: #fee1db;
 	min-height: 100vh;
 `
 
@@ -19,7 +19,7 @@ let LeftDiv = styled.div.attrs({
 let RightDiv = styled.div.attrs({
 	className: 'col-9 right-panel' // bootstrap 的样式
 })`
-	background-color: #4d4e68;
+	background-color: #fffdfc;
 	min-height: 100vh;
 `
 

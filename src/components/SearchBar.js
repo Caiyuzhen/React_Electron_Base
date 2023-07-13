@@ -12,32 +12,49 @@ import close from '../../src/resource/icon/icon-close.svg'
 // 自定义搜索区域的 div 样式
 const SearchDiv = styled.div.attrs({
 	// 👇Bootstrap 提供的样式类名
-	className: 'd-flex align-items-center justify-content-between mt-2', //Bootstrap 的 mt-2 类名来设置 margin-top 为 8px
+	className: 'd-flex align-items-center justify-content-between mt-4', //Bootstrap 的 mt-2 类名来设置 margin-top 为 8px
 })`
 	/* 👇自定义的 styleComponent 样式 */
-	border-bottom: 1px solid #9c9cba; //分割线
+	display: flex;
+	padding: 0 8px 0 12px;
 	margin-left: 12px;
+	margin-bottom: 16px;
+	border-radius: 6px;
+	height: 36px;
+	/* background-color: rgba(255, 255, 255, 0.2); */
+
 	span {
-		color: #19191c;
-		padding: 0 12px;
-		font: normal 16px/40px 'PingFang'; // 字体 16px, 行高 40px
+		color: #ab6262;
+		font-weight: 600;
+		padding: 0 0 0 2px;
+		font: normal 18px/40px 'PingFang'; // 字体 16px, 行高 40px
+		display: flex;
 	};
+
 	img {
 		cursor: pointer;
 	};
+
 	input {
+		color: #fff;
 		width: 100%;
-		height: 40px;
+		height: 36px;
 		border: none;
-		border-radius: 6px;
-		margin-left: 8px;
-		padding: 0 8px;
-		background-color: rgba(255, 255, 255, 0.2);
+		padding: 0 8px 0 0;
+		background-color: rgba(255, 255, 255, 0);
+		transition: 0.3s ease-in-out;
 	};
+
 	/* input 框的聚焦态 */
 	input:focus {
+		padding: 0 8px;
+		margin-right: 8px;
+		color: #fff;
+		height: 36px;
 		outline: none;
-		background-color: rgba(255, 255, 255, 0.4);
+		transition: 0.3s ease-in-out;
+		border-radius: 6px;
+		background-color: rgba(255, 255, 255, 0.6);
 	};
 `
 
@@ -84,6 +101,7 @@ const SearchBar = ({title, onSearchData}) => {
 				closeSearch()
 			}
 		}
+		
 
 		document.addEventListener('keyup', searchHandle) // 监听键盘的操作, keyup 表示键盘按键抬起时触发
 
@@ -107,12 +125,12 @@ const SearchBar = ({title, onSearchData}) => {
 				// 判断显示【搜索结果】还是【默认状态】
 				!searchActive && 
 					<>
-						<SearchDiv style={{marginTop: '8px'}}>
+						<SearchDiv>
 							<span>{title}</span>
 							<span
 								onClick={() => { setSearchActive(!searchActive) }}
 							>	
-								<img src={ searchActive ? close : search } alt= "" style={{ width: 24 }}/>
+								<img src={ searchActive ? close : search } alt= "" style={{ width: 20 }}/>
 							</span>
 						</SearchDiv>
 					</>
@@ -128,11 +146,12 @@ const SearchBar = ({title, onSearchData}) => {
 								placeholder='Search data'
 								value={value}
 								onChange={(e) => { setValue(e.target.value) }} //受控组件, 拿到 input 框的内容并保存到 value 中
+								onBlur={() => setSearchActive(false)}
 							/>
 							<span
 								onClick={() => { closeSearch() }}
 							>	
-								<img src={ searchActive ? close : search } alt= "" style={{ width: 24 }}/>
+								<img src={ searchActive ? close : search } alt= "" style={{ width: 20 }}/>
 							</span>
 						</SearchDiv>
 					</>
