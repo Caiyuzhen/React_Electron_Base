@@ -37,6 +37,8 @@ function App() {
 					</SearchBar>
 
 					<FileList
+						editFile={ (id) => { console.log('编辑文档:', id) } }
+						deleteFile={ (id) => { console.log('删除文档:', id) } }
 						files={initFilesData}
 					>
 					</FileList>
