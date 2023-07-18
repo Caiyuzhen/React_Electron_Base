@@ -4,7 +4,7 @@ import docs from '../../src/resource/icon/icon-Docs.svg'
 import edit from '../../src/resource/icon/icon-edit.svg'
 import deleteIcon from '../../src/resource/icon/icon-delete.svg'
 import closeIcon from '../../src/resource/icon/icon-close.svg'
-
+import {useKeyboardHandle} from '../../src/hooks/useKeyHandle.js'
 
 
 // UL 标签
@@ -47,6 +47,9 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 
 	const [editItem, setEditItem] = useState(false) // 判断是否改显示重名的 UI
 	const [value, setValue] = useState('') //编辑文档名
+	const enterPressed = useKeyboardHandle(13)	// 👉结合 hook 的抽象, 用来判断对应的键盘 (Esc、Enter) 是否按下了
+	const escPressed = useKeyboardHandle(27)	// 👉结合 hook 的抽象, 用来判断对应的键盘 (Esc、Enter) 是否按下了
+
 
 	// 关闭 list 的【编辑状态】
 	const closeListEdit = () => {
@@ -56,23 +59,33 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 
 	// 键盘的事件操作
 	useEffect(() => {
-		const keyboardHandle = (e) => {
-			let {keyCode} = e //解构出键盘事件
-			if(keyCode === 13 && editItem) {//键盘为回车并且为 editItem 状态
-				saveFile(editItem, value) //把【item id】跟【输入框的 value 】给到 App.js 组件
-				closeListEdit() //关闭编辑状态
-			}
-			if(keyCode === 27 && editItem) {//键盘为 esc 并且为 editItem 状态
-				closeListEdit() //关闭编辑状态
-			}
+		// 👇抽象后, 用钩子函数判断 ---
+		if(enterPressed && editItem) {
+			saveFile(editItem, value) //把【item id】跟【输入框的 value 】给到 App.js 组件
+			closeListEdit() //关闭编辑状态
 		}
-		// 👇监听键盘事件
-		document.addEventListener('keyup', keyboardHandle) 
+		if(escPressed && editItem) {
+			closeListEdit() //关闭编辑状态
+		}
 
-		// 👇移除键盘的监听事件
-		return () => {
-			document.removeEventListener('keyup', keyboardHandle)
-		}
+		// 👇未抽象前, 直接判断 ---
+		// const keyboardHandle = (e) => {
+		// 	let {keyCode} = e //解构出键盘事件
+		// 	if(keyCode === 13 && editItem) {//键盘为回车并且为 editItem 状态
+		// 		saveFile(editItem, value) //把【item id】跟【输入框的 value 】给到 App.js 组件
+		// 		closeListEdit() //关闭编辑状态
+		// 	}
+		// 	if(keyCode === 27 && editItem) {//键盘为 esc 并且为 editItem 状态
+		// 		closeListEdit() //关闭编辑状态
+		// 	}
+		// }
+		// // 👇监听键盘事件
+		// document.addEventListener('keyup', keyboardHandle) 
+
+		// // 👇移除键盘的监听事件
+		// return () => {
+		// 	document.removeEventListener('keyup', keyboardHandle)
+		// }
 	})
 
 	return (

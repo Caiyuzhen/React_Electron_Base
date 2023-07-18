@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import search from '../../src/resource/icon/icon-search.svg'
 import close from '../../src/resource/icon/icon-close.svg'
+import {useKeyboardHandle} from '../../src/hooks/useKeyHandle.js'
 
 /**
  * @title {string} 标题文案
@@ -36,7 +37,7 @@ const SearchDiv = styled.div.attrs({
 	};
 
 	input {
-		color: #fff;
+		color: #252525;
 		width: 100%;
 		height: 36px;
 		border: none;
@@ -49,7 +50,7 @@ const SearchDiv = styled.div.attrs({
 	input:focus {
 		padding: 0 8px;
 		margin-right: 8px;
-		color: #fff;
+		color: #252525;
 		height: 36px;
 		outline: none;
 		transition: 0.3s ease-in-out;
@@ -65,6 +66,9 @@ const SearchBar = ({title, onSearchData}) => {
 	const [searchActive, setSearchActive] = useState(false) //是否是搜索状态
 	const [value, setValue] = useState('') //列表的值
 	const oInput = useRef(null) //获取 input 框的 DOM, 用于聚焦
+	const enterPressed = useKeyboardHandle(13)	// 👉结合 hook 的抽象, 用来判断对应的键盘 (Esc、Enter) 是否按下了
+	const escPressed = useKeyboardHandle(27)	// 👉结合 hook 的抽象, 用来判断对应的键盘 (Esc、Enter) 是否按下了
+
 	
 	// 退出搜索状态
 	const closeSearch = () => {
@@ -90,23 +94,35 @@ const SearchBar = ({title, onSearchData}) => {
 	}, [])
 
 
+
 	// 监听键盘的操作, 回车后把 input 的 value 传递给 App.js
-	useEffect(() => {
-		const searchHandle = (e) => {
-			const { keyCode } = e
-			if(keyCode === 13 && searchActive) {//13 为回车键
-				onSearchData(value) // 👈 把输入框的数据传递给 onSearchData, onSearchData 是要传递给上层组件 App.js 的数据
-			}
-			if(keyCode === 27 && searchActive) {//27 为 esc 键
-				closeSearch()
-			}
-		}
+	// 👇未抽象前 ---
+	// useEffect(() => {
+	// 	const searchHandle = (e) => {
+	// 		const { keyCode } = e
+	// 		if(keyCode === 13 && searchActive) {//13 为回车键
+	// 			onSearchData(value) // 👈 把输入框的数据传递给 onSearchData, onSearchData 是要传递给上层组件 App.js 的数据
+	// 		}
+	// 		if(keyCode === 27 && searchActive) {//27 为 esc 键
+	// 			closeSearch()
+	// 		}
+	// 	}
 		
 
-		document.addEventListener('keyup', searchHandle) // 监听键盘的操作, keyup 表示键盘按键抬起时触发
+	// 	document.addEventListener('keyup', searchHandle) // 监听键盘的操作, keyup 表示键盘按键抬起时触发
 
-		return () => { // 🚀 组件卸载（React 内部有卸载机制）后, 移除这个副作用, 避免内存泄露。 我们需要在组件卸载时清理一些副作用,比如移除事件监听,取消网络请求等。这时我们需要在useEffect中返回一个清理函数
-			document.removeEventListener('keyup', searchHandle)
+	// 	return () => { // 🚀 组件卸载（React 内部有卸载机制）后, 移除这个副作用, 避免内存泄露。 我们需要在组件卸载时清理一些副作用,比如移除事件监听,取消网络请求等。这时我们需要在useEffect中返回一个清理函数
+	// 		document.removeEventListener('keyup', searchHandle)
+	// 	}
+	// }, [searchActive])
+
+	// // 👇抽象后, 用钩子函数判断 ---
+	useEffect(() => {
+		if(enterPressed && searchActive) {
+			onSearchData(value) // 👈 把输入框的数据传递给 onSearchData, onSearchData 是要传递给上层组件 App.js 的数据
+		}
+		if(escPressed && searchActive) {
+			closeSearch()
 		}
 	})
 
