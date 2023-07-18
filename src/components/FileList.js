@@ -37,16 +37,55 @@ let GroupUL = styled.ul.attrs({
 	}
 
 	span {
-		color: #663131;
+		color: #232326;
 	}
+
+	.edit_btn, .delete_btn, .close_btn {
+		cursor: pointer;
+	}
+
+	input {
+		width: 99%;
+		border: none;
+		height: 24px;
+		border-radius: 4px; 
+		background-color: rgba(255, 255, 255, 0.6); 
+		transition: 0.3s ease-in-out;
+
+		&::placeholder {
+			font-size: 14px;
+			transition: 0.3s ease-in-out;
+			padding-left: 0px;
+		}
+	};
+
+	/* input 框的聚焦态 */
+	input:focus {
+		border: none;
+		height: 24px;
+		width: 99%;
+		outline: none;
+		transition: 0.3s ease-in-out;
+		box-shadow: 0 0 0 1px #4D4AE8;
+		border-radius: 4px; 
+		background-color: rgba(255, 255, 255, 0.9);
+		transition: 0.3s ease-in-out;
+
+		&::placeholder {
+			font-size: 14px;
+			transition: 0.3s ease-in-out;
+			padding-left: 2px;
+		}
+	};
 `
 
 
 
 export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 
-	const [editItem, setEditItem] = useState(false) // 判断是否改显示重名的 UI
+	const [editItem, setEditItem] = useState(false) // 判断是否要显示重名的 UI 样式
 	const [value, setValue] = useState('') //编辑文档名
+	const oInput = useRef(null) //获取 input 框的 DOM, 用于聚焦
 	const enterPressed = useKeyboardHandle(13)	// 👉结合 hook 的抽象, 用来判断对应的键盘 (Esc、Enter) 是否按下了
 	const escPressed = useKeyboardHandle(27)	// 👉结合 hook 的抽象, 用来判断对应的键盘 (Esc、Enter) 是否按下了
 
@@ -88,6 +127,13 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 		// }
 	})
 
+	//⚡️编辑后自动聚焦输入框
+	useEffect(() => {
+		if(editItem) {
+			oInput.current.focus() 
+		}
+	}, [editItem])
+
 	return (
 		<GroupUL>
 			{
@@ -108,10 +154,12 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 										</li>
 										<div className="action">
 											<img //编辑文档名
+												className="edit_btn"
 												onClick={ () => {setEditItem(file.id)} } //把 id 传递给 App.js
 												src={edit} style={{width: 16}}
 											/>
 											<img //删除文档
+												className="delete_btn"
 												onClick={ () => {editFile(file.id)} }//把 id 传递给 App.js
 												src={deleteIcon} 
 												style={{width: 16}}
@@ -126,6 +174,8 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 											className='list-group-item d-flex align-items-center'
 										>
 											<input //输入框
+												ref={oInput}
+												placeholder='Edit Docs name'
 												value={value} //🔥受控组件
 												onChange={ (e) => {setValue(e.target.value)} } //🔥受控组件, 更新文档名为 value 
 												onClick={ () => {editFile(file.id)} }   //把 id 传递给 App.js
@@ -133,6 +183,7 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 										</li>
 										<div className="action">
 											<img  //关闭编辑状态
+												className="close_btn"
 												onClick={ () => { closeListEdit() } } //把 id 传递给 App.js
 												src={closeIcon} style={{width: 16} }
 											/>

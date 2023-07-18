@@ -24,11 +24,11 @@ const SearchDiv = styled.div.attrs({
 	height: 36px;
 	/* background-color: rgba(255, 255, 255, 0.2); */
 
-	span {
-		color: #ab6262;
-		font-weight: 600;
+	.main_title {
+		color: #232326;
 		padding: 0 0 0 2px;
-		font: normal 18px/40px 'PingFang'; // 字体 16px, 行高 40px
+		font: normal 20px/4px 'Helvetica'; // 字体 16px, 行高 40px
+		font-weight: 600;
 		display: flex;
 	};
 
@@ -55,6 +55,7 @@ const SearchDiv = styled.div.attrs({
 		outline: none;
 		transition: 0.3s ease-in-out;
 		border-radius: 6px;
+		box-shadow: 0 0 0 1px #4D4AE8;
 		background-color: rgba(255, 255, 255, 0.6);
 	};
 `
@@ -142,7 +143,7 @@ const SearchBar = ({title, onSearchData}) => {
 				!searchActive && 
 					<>
 						<SearchDiv>
-							<span>{title}</span>
+							<div className="main_title">{title}</div>
 							<span
 								onClick={() => { setSearchActive(!searchActive) }}
 							>	
@@ -159,7 +160,7 @@ const SearchBar = ({title, onSearchData}) => {
 							<input 
 								ref={oInput}
 								type="text" 
-								placeholder='Search data'
+								placeholder='Search Docs'
 								value={value}
 								onChange={(e) => { setValue(e.target.value) }} //受控组件, 拿到 input 框的内容并保存到 value 中
 								onBlur={() => setSearchActive(false)}
