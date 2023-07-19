@@ -197,7 +197,9 @@ function App() {
 					<TabList
 						files={initFilesData}
 						activeItem={'1'} //选中哪个 tab 
-						clickItem={(id) => {console.log(id)}}
+						unSaveItems={['2', '3', '5']} //
+						clickItem={(id) => {console.log('点击 tab:', id)}}
+						closeItem={(id) => {console.log('点击 close', id)}}
 					/>
 				</RightDiv>
 			</div>
