@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="160px" height="160px" viewBox="0 0 160 160" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon-add</title>
+    <g id="icon-add" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="新建" transform="translate(16.000000, 16.000000)" fill="#ffffff" fill-rule="nonzero">
+            <path d="M121.6,58 L6.4,58 C2.88,58 0,60.925 0,64.5 C0,68.075 2.88,71 6.4,71 L121.6,71 C125.12,71 128,68.075 128,64.5 C128,60.925 125.12,58 121.6,58 Z" id="路径"></path>
+            <path d="M64.5,0 C60.925,0 58,2.88 58,6.4 L58,121.6 C58,125.12 60.925,128 64.5,128 C68.075,128 71,125.12 71,121.6 L71,6.4 C71,2.88 68.075,0 64.5,0 Z" id="路径"></path>
+        </g>
+    </g>
+</svg>

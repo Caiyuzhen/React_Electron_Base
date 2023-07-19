@@ -5,6 +5,9 @@ import SearchBar from './components/SearchBar'
 import FileList from './components/FileList'
 import initFilesData from './utils/mock/initFilesData'
 import {ButtonItems} from './components/Button'
+import addIcon from '../src/resource/icon/icon-add.svg'
+import importIcon from '../src/resource/icon/icon-import.svg'
+import {TabList} from '../src/components/TabList'
 
 
 // 左侧容器样式 （styled-components 语法）
@@ -14,6 +17,11 @@ let LeftDiv = styled.div.attrs({
 	background-color: #d4d8f2;
 	min-height: 100vh;
 	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding-bottom: 24px;
+	box-sizing: border-box;
 
 	.btn_list {
 		padding: 0 24px;
@@ -22,10 +30,16 @@ let LeftDiv = styled.div.attrs({
 		align-items: center;
 		bottom: 24px;
 		left: 2px;
-		/* 脱离文档流在底部 */
+		gap: 8px;
 		/* position: fixed; */
-
 	}
+
+	/* span {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+	} */
 `
 
 
@@ -51,14 +65,17 @@ const customAddStyles = css
 	color: #FFFFFF;
 	cursor: pointer;
 	display: inline-block;
+	gap: 4px;
+	align-items: center;
+	justify-content: center;
 	font-family: Inter,sans-serif;
-	font-size: 1rem;
+	font-size: 14px;
 	font-weight: 500;
 	line-height: 1.5;
 	height: 36px;
 	width: 100%;
+	min-width: 98px;
 	margin: 0;
-	padding: .5rem 1rem;
 	text-align: center;
 	text-transform: none;
 	transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
@@ -102,12 +119,13 @@ const customImportStyles = css
 	box-sizing: border-box;
 	color: #fff;
 	cursor: pointer;
-	display: inline-flex;
-	flex-direction: column;
 	font-family: expo-brand-demi,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
-	font-size: 18px;
+	font-size: 14px;
 	height: 36px;
 	width: 100%;
+	min-width: 98px;
+	display: inline-flex;
+	gap: 4px;
 	justify-content: center;
 	line-height: 1;
 	margin: 0;
@@ -124,18 +142,18 @@ const customImportStyles = css
 	-webkit-user-select: none;
 	touch-action: manipulation;
 
-
 	&:hover {
-	box-shadow: rgba(0, 1, 0, .2) 0 2px 8px;
-	opacity: .85;
+		color: #fff;
+		box-shadow: rgba(0, 1, 0, .2) 0 2px 8px;
+		background-image: linear-gradient(#323840, #1a1e22);
+		opacity: .85;
 	}
 
 	&:active {
-	outline: 0;
-	}
-
-	&:focus {
-	box-shadow: rgba(0, 0, 0, .5) 0 0 0 3px;
+		color: #fff;
+		outline: 0;
+		opacity: 1;
+		background-image: linear-gradient(#22282e, #0f1114);
 	}
 `
 
@@ -146,32 +164,42 @@ function App() {
 		<div className="App container-fluid px-0">
 			<div className="row">
 				<LeftDiv>
-					<SearchBar
-						title='📃 My Docs'
-						onSearchData={(value) => {console.log(value)}} //🚀 数据来自 SearchFile 下层组件!!
-					>
-					</SearchBar>
+					<div className="top_container">
+						<SearchBar
+							title='📃 My Docs'
+							onSearchData={(value) => {console.log(value)}} //🚀 数据来自 SearchFile 下层组件!!
+						>
+						</SearchBar>
 
-					<FileList
-						editFile={ (id) => { console.log('编辑文档:', id) } } //id 由下层组件传入
-						deleteFile={ (id) => { console.log('删除文档:', id) } } //id 由下层组件传入
-						files={initFilesData}
-						saveFile={ (id, value)=>{console.log(id, value)} }
-					>
-					</FileList>
+						<FileList
+							editFile={ (id) => { console.log('编辑文档:', id) } } //id 由下层组件传入
+							deleteFile={ (id) => { console.log('删除文档:', id) } } //id 由下层组件传入
+							files={initFilesData}
+							saveFile={ (id, value)=>{console.log(id, value)} }
+						>
+						</FileList>
+					</div>
 
 					<div className="btn_list">
 						<ButtonItems
-							css = {customAddStyles} //把 css 样式出传入下一层组件！
-							title = {'New'}
+							css={customAddStyles} //把 css 样式出传入下一层组件！
+							icon={addIcon}
+							title={'New'}
 						/>
 						<ButtonItems
 							css = {customImportStyles} //把 css 样式出传入下一层组件！
+							icon={importIcon}
 							title = {'Import'}
 						/>
 					</div>
 				</LeftDiv>
-				<RightDiv>右侧</RightDiv>
+				<RightDiv>
+					<TabList
+						files={initFilesData}
+						activeItem={'1'} //选中哪个 tab 
+						clickItem={(id) => {console.log(id)}}
+					/>
+				</RightDiv>
 			</div>
 		</div>
 	)

@@ -57,7 +57,7 @@ let GroupUL = styled.ul.attrs({
 			transition: 0.3s ease-in-out;
 			padding-left: 0px;
 		}
-	};
+	}
 
 	/* input 框的聚焦态 */
 	input:focus {
