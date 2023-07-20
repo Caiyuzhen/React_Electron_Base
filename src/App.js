@@ -8,6 +8,8 @@ import {ButtonItems} from './components/Button'
 import addIcon from '../src/resource/icon/icon-add.svg'
 import importIcon from '../src/resource/icon/icon-import.svg'
 import {TabList} from '../src/components/TabList'
+import SimpleMDE from "react-simplemde-editor";
+import "easymde/dist/easymde.min.css";
 
 
 // 左侧容器样式 （styled-components 语法）
@@ -200,6 +202,16 @@ function App() {
 						unSaveItems={['2', '3', '5']} //
 						clickItem={(id) => {console.log('点击 tab:', id)}}
 						closeItem={(id) => {console.log('点击 close', id)}}
+					/>
+					<SimpleMDE 
+						className="custom-editor"
+						onChange={(value) => {console.log(value)}} //编辑框的值
+						value={initFilesData[0].body} //从 json 初始化数据中取出值
+						options={{
+							autofocus: true, //自动聚焦
+							spellChecker: false, //拼写检查
+							minHeight: "560px",
+						}}
 					/>
 				</RightDiv>
 			</div>
