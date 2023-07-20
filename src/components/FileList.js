@@ -11,7 +11,9 @@ import {useKeyboardHandle} from '../../src/hooks/useKeyHandle.js'
 let GroupUL = styled.ul.attrs({
 	className: "list-group list-group-flush"
 })`
+	padding-left: 8px;
 	border-bottom: 0px solid #9c9cba; //分割线
+
 	li {
 		width: 100%;
 		background-color: transparent;
@@ -19,6 +21,7 @@ let GroupUL = styled.ul.attrs({
 
 	.list-group-item {
 		border: none !important;
+		padding: 8px;
 	}
 	
 	.cell {
@@ -27,7 +30,13 @@ let GroupUL = styled.ul.attrs({
 		justify-content: flex-start;
 		align-items: center;
 		margin-top: 4px;
-		padding: 0 8px 0 6px;
+		padding: 0 10px 0 6px;
+		cursor: pointer;
+	}
+
+	.cell:hover {
+		background-color: rgba(37, 34, 56, 0.15);
+		border-radius: 8px;
 	}
 
 	.action {
@@ -139,8 +148,11 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 			{
 				files.map((file) => {
 					return (
-						<div className="cell" key={file.id}>
-							
+						<div className="cell" 
+							 key={file.id}
+							 //点击文档
+							 onClick={ () => {editFile(file.id)}}   //把 id 传递给 App.js
+						>
 							{ //列表默认状态
 								(file.id !== editItem) &&  
 									<>
@@ -148,9 +160,7 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 											className='list-group-item d-flex align-items-center'
 										>
 											<img src={docs} style={{width: 18, marginRight: 4}}/>
-											<span //点击文档
-												onClick={ () => {editFile(file.id)}}   //把 id 传递给 App.js
-											>{file.title}</span>
+											<span>{file.title}</span>
 										</li>
 										<div className="action">
 											<img //编辑文档名

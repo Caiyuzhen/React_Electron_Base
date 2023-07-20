@@ -7,12 +7,9 @@ import unSaveIcon  from '../../src/resource/icon/icon-unSave.svg'
 const TabUl = styled.ul.attrs({
 	className: 'nav nav-pills' //药丸样式
 })`
-	padding-top: 16px;
-	padding-left: 4px;
-	
-	a {
-		color: #9c9ca9;
-	}
+	width: 100%;
+	padding-top: 20px;
+	padding-bottom: 12px;
 
 	.active {
 		background-color: #d4d8f2 !important;
@@ -36,25 +33,31 @@ const TabUl = styled.ul.attrs({
 
 	.closeIcon {
 		display: none;
-		transition: all 0.3s ease-in-out;
 	}
 
-	.nav-link:hover .closeIcon { //🚀移上 tab 后, 显示关闭按钮
+	a {
+		color: #9c9ca9;
+		width: 100%;
+	}
+
+	.nav-items {
+		width: 100px;
+		white-space: nowrap;
+	}
+	
+	.nav-items:hover {
+		transition: all 0.3s ease-in-out;
+		width: 120px;
+	}
+
+
+	.nav-items:hover .closeIcon { //🚀 移入 tab 后, 显示关闭按钮
 		display: inline-block;
-		transition: all 0.3s ease-in-out;
+		width: 28px;
 	}
 
-	.nav-link:hover .rounded-circle { //🚀移上 tab 后, 隐藏未保存按钮
+	.nav-items:hover .rounded-circle { //🚀 移入 tab 后, 隐藏未保存按钮
 		display: none;
-		transition: all 0.3s ease-in-out;
-	}
-
-	.rounded-circle {
-		transition: all 0.3s ease-in-out;
-	}
-
-	.unSaveStyle {
-		
 	}
 `
 
