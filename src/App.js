@@ -229,15 +229,31 @@ function App() {
 			if(file.id === id) { //需要更新的文件
 				file.body = newValue 
 			}
-
 			return file
 		})
 
 		setFiles(newFiles)
 	}
+
+	// 🔪 删除某篇文档 docs
+	const deleteItem = (id) => {
+		const newFiles = files.filter(file => file.id !== id)
+
+		setFiles(newFiles) //🚀更新到原来的 files 列表中
+
+		// 如果删除的这项刚好的当前打开的 tab, 那么应该关闭掉这个 tab
+		closeActiveEditContent(id)
+	}
+
+	// 🔍 搜索某篇文档的标题
+	const searchFile = (keyWord) => {
+		const newFiles = files.filter(file => file.includes(keyWord))
+		setFiles(newFiles)
+	}
+
 	
 	// 🔥正在编辑的 docs 的默认内容 （根据 activeEditId 从所有 files 的 body 中取出数据） => 用来判断编辑状态
-	const activeFileContent = files.find(file => file.id === activeEditId)  //只会有一个
+	const activeFileContent = files.find(file => file.title === activeEditId)  //只会有一个
 
 
 	return (
@@ -247,17 +263,21 @@ function App() {
 					<div className="top_container">
 						<SearchBar
 							title='📃 My Docs'
-							onSearchData={(value) => {console.log(value)}} //🚀 数据来自 SearchFile 下层组件!!
+							onSearchData={
+								(value) => {console.log(value); searchFile(value) //🚀 数据来自 SearchFile 下层组件!!
+							}} 
 						>
 						</SearchBar>
 
 						<FileList
 							// editFile={ (id) => { console.log('编辑文档:', id) } } //id 由下层组件传入
 							editFile={openItem}
-							deleteFile={ (id) => { console.log('删除文档:', id) } } //id 由下层组件传入
+							deleteFile={ 
+								(id) => { console.log('删除文档:', id); deleteItem(id) //id 由下层组件传入
+							}} 
 							// files={initFilesData}
 							files={files}
-							saveFile={ (id, value)=>{console.log(id, value)} }
+							saveFile={ (id, value)=>{console.log(id, value)}}
 						>
 						</FileList>
 					</div>

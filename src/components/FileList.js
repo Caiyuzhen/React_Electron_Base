@@ -151,7 +151,7 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 						<div className="cell" 
 							 key={file.id}
 							 //点击文档
-							 onClick={ () => {editFile(file.id)}}   //把 id 传递给 App.js
+							 onClick={ () => {editFile(file.id)}}   //把 id 传递给 App.js, 点后打开这篇文档
 						>
 							{ //列表默认状态
 								(file.id !== editItem) &&  
@@ -165,12 +165,14 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 										<div className="action">
 											<img //编辑文档名
 												className="edit_btn"
-												onClick={ () => {setEditItem(file.id)} } //把 id 传递给 App.js
+												onClick={ 
+													(e) => {setEditItem(file.id); e.stopPropagation()} //把 id 传递给 App.js  // e.stopPropagation() 阻止事件冒泡, 不然会触发点击整个 item
+												} 
 												src={edit} style={{width: 16}}
 											/>
 											<img //删除文档
 												className="delete_btn"
-												onClick={ () => {editFile(file.id)} }//把 id 传递给 App.js
+												onClick={ (e) => {deleteFile(file.id); e.stopPropagation() }}//把 id 传递给 App.js
 												src={deleteIcon} 
 												style={{width: 16}}
 											/>
@@ -188,14 +190,14 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 												placeholder='Edit Docs name'
 												value={value} //🔥受控组件
 												onChange={ (e) => {setValue(e.target.value)} } //🔥受控组件, 更新文档名为 value 
-												onClick={ () => {editFile(file.id)} }   //把 id 传递给 App.js
+												// onClick={ () => {editFile(file.id)} }   //把 id 传递给 App.js
 											/>
 										</li>
 										<div className="action">
 											<img  //关闭编辑状态
 												className="close_btn"
-												onClick={ () => { closeListEdit() } } //把 id 传递给 App.js
-												src={closeIcon} style={{width: 16} }
+												onClick={ (e) => { closeListEdit(); e.stopPropagation() }} //把 id 传递给 App.js
+												src={closeIcon} style={{width: 16}}
 											/>
 										</div>
 									</>
