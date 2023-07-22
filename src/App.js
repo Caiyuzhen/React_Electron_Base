@@ -182,11 +182,17 @@ function App() {
 	const [openIds, setOpenIds] = useState([]) // 当前已打开的所有文件（docs）信息, 比如 1 就是打开了第一个 docs, 1, 2 就是打开了第一二个 docs
 	const [activeEditId, setActiveEditId] = useState('')  // 当前聚焦在哪个 tab 的信息
 	const [unSaveIds, setUnSaveIds] = useState([]) // 未保存的文件（docs）信息
+	const [searchFiles, setSearchFiles] = useState([])  // 左侧展示的搜索列表, 与默认的展示列表作区分
 
 	// 🌟 获得已打开的文件的信息 => 根据 openId 来判断展示哪个 tab 🔥
 	const openFiles = openIds.map(openId => {
 		return files.find(file => file.id === openId) //同时可能打开多个
 	})
+
+	// 坐标列表展示【搜索的文件】还是【默认列表】
+	const fileList = (searchFiles.length > 0) ? searchFiles : files
+
+
 
 	// 🌟 点击左侧文件, 打开 docs
 	const openItem = (id) => {
@@ -238,18 +244,19 @@ function App() {
 	// 🔪 删除某篇文档 docs
 	const deleteItem = (id) => {
 		const newFiles = files.filter(file => file.id !== id)
-
 		setFiles(newFiles) //🚀更新到原来的 files 列表中
-
 		// 如果删除的这项刚好的当前打开的 tab, 那么应该关闭掉这个 tab
 		closeActiveEditContent(id)
 	}
 
 	// 🔍 搜索某篇文档的标题
 	const searchFile = (keyWord) => {
-		const newFiles = files.filter(file => file.includes(keyWord))
-		setFiles(newFiles)
+		console.log('搜索关键字:', keyWord)
+		const newFiles = files.filter(file => file.title.includes(keyWord))
+		// setFiles(newFiles)
+		setSearchFiles(newFiles)
 	}
+
 
 	
 	// 🔥正在编辑的 docs 的默认内容 （根据 activeEditId 从所有 files 的 body 中取出数据） => 用来判断编辑状态
@@ -264,7 +271,8 @@ function App() {
 						<SearchBar
 							title='📃 My Docs'
 							onSearchData={
-								(value) => {console.log(value); searchFile(value) //🚀 数据来自 SearchFile 下层组件!!
+								(value) => {console.log(value); 
+								searchFile(value) //🚀 数据来自 SearchFile 下层组件!! 如果没搜索内容, 就传入 '' 来搜索空内容
 							}} 
 						>
 						</SearchBar>
@@ -276,7 +284,7 @@ function App() {
 								(id) => { console.log('删除文档:', id); deleteItem(id) //id 由下层组件传入
 							}} 
 							// files={initFilesData}
-							files={files}
+							files={fileList}
 							saveFile={ (id, value)=>{console.log(id, value)}}
 						>
 						</FileList>
