@@ -66,27 +66,15 @@ const SearchBar = ({title, onSearchData}) => {
 
 	const [searchActive, setSearchActive] = useState(false) //是否是搜索状态
 	const [value, setValue] = useState('') //列表的值
-	const [isClose, setIsClose] = useState(false) //是否显示【关闭】按钮
 	const oInput = useRef(null) //获取 input 框的 DOM, 用于聚焦
 	const enterPressed = useKeyboardHandle(13)	// 👉结合 hook 的抽象, 用来判断对应的键盘 (Esc、Enter) 是否按下了
 	const escPressed = useKeyboardHandle(27)	// 👉结合 hook 的抽象, 用来判断对应的键盘 (Esc、Enter) 是否按下了
 
 
-	const actions = () => {
-		// 如果不是搜索态则进入搜索态, 否则退出搜索态
-		if(!searchActive) {
-			setSearchActive(true)
-			setIsClose(!isClose)
-		}
-		if(isClose) {
-			closeSearch()
-			console.log('退出')
-		}
-	}
-
 	
 	// 退出搜索状态
 	const closeSearch = () => {
+		console.log(22)
 		setSearchActive(false)
 		//清空输入框的值
 		setValue('')
@@ -94,6 +82,7 @@ const SearchBar = ({title, onSearchData}) => {
 		// 点击关闭索索后, 提供个【空字符】, 展示回【所有列表】
 		onSearchData([])
 	}
+
 
 
 	// 👇command + k 快捷键
@@ -150,6 +139,9 @@ const SearchBar = ({title, onSearchData}) => {
 		if(searchActive) {
 			oInput.current.focus() 
 		}
+		else {
+			closeSearch() //如果没有进入搜索状态, 则关闭搜索, 展示回所有列表
+		}
 	}, [searchActive])
 
 
@@ -161,13 +153,11 @@ const SearchBar = ({title, onSearchData}) => {
 					<>
 						<SearchDiv>
 							<div className="main_title">{title}</div>
-							<span
-								onClick={() => { 
-									// 判断是【搜索】还是【关闭】
-									actions()
-								}}
-							>	
-								<img src={ searchActive ? close : search } alt= "" style={{ width: 20 }}/>
+							<span>	
+								<img 
+									src={ searchActive ? close : search } alt= "" style={{ width: 20 }}
+									onClick={() => {setSearchActive(true)}}
+								/>
 							</span>
 						</SearchDiv>
 					</>
@@ -185,9 +175,7 @@ const SearchBar = ({title, onSearchData}) => {
 								onChange={(e) => { setValue(e.target.value) }} //受控组件, 拿到 input 框的内容并保存到 value 中
 								onBlur={() => setSearchActive(false)}
 							/>
-							<span
-								onClick={() => { closeSearch() }}
-							>	
+							<span>	
 								<img src={ searchActive ? close : search } alt= "" style={{ width: 20 }}/>
 							</span>
 						</SearchDiv>

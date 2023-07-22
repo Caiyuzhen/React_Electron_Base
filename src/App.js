@@ -224,6 +224,7 @@ function App() {
 		}
 	}
 
+
 	// 🌟 编辑 docs 内容（出现红色⭕️）
 	const changeFile = (id, newValue) => { //在编辑时候, 传入 id, 判断是否已经保存过
 		if(!unSaveIds.includes(id)) { // 如果还没有保存过, 就加入
@@ -237,9 +238,9 @@ function App() {
 			}
 			return file
 		})
-
 		setFiles(newFiles)
 	}
+
 
 	// 🔪 删除某篇文档 docs
 	const deleteItem = (id) => {
@@ -249,6 +250,7 @@ function App() {
 		closeActiveEditContent(id)
 	}
 
+
 	// 🔍 搜索某篇文档的标题
 	const searchFile = (keyWord) => {
 		console.log('搜索关键字:', keyWord)
@@ -256,6 +258,21 @@ function App() {
 		// setFiles(newFiles)
 		setSearchFiles(newFiles)
 	}
+
+	// 🌞 编辑某篇文档的标题
+	const reName = (id, newTitle) => {
+		const newFiles = files.map(file => {
+			if(file.id === id) {
+				file.title = newTitle
+			}
+			return file //把修改后的 file 返回给 newFiles
+		})
+
+		setFiles(newFiles)
+	}
+
+
+	// ✏️ 新建文件
 
 
 	
@@ -285,7 +302,9 @@ function App() {
 							}} 
 							// files={initFilesData}
 							files={fileList}
-							saveFile={ (id, value)=>{console.log(id, value)}}
+							saveFile={  //【回车】保存新的文档名称
+								 (id, value)=>{console.log(id, value); reName(id, value)}
+							}
 						>
 						</FileList>
 					</div>
