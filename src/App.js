@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import styled, {css} from 'styled-components'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import SearchBar from './components/SearchBar'
@@ -12,7 +12,7 @@ import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { useState } from 'react'
 import placeholderImg from '../src/resource/img/placeholder-inspired.png'
-
+import { v4 as uuidv4 } from 'uuid'; 
 
 // 左侧容器样式 （styled-components 语法）
 let LeftDiv = styled.div.attrs({
@@ -183,15 +183,31 @@ function App() {
 	const [activeEditId, setActiveEditId] = useState('')  // 当前聚焦在哪个 tab 的信息
 	const [unSaveIds, setUnSaveIds] = useState([]) // 未保存的文件（docs）信息
 	const [searchFiles, setSearchFiles] = useState([])  // 左侧展示的搜索列表, 与默认的展示列表作区分
+	const [showFileList, setShowFileList] = useState([])
 
 	// 🌟 获得已打开的文件的信息 => 根据 openId 来判断展示哪个 tab 🔥
 	const openFiles = openIds.map(openId => {
 		return files.find(file => file.id === openId) //同时可能打开多个
 	})
+	
 
-	// 坐标列表展示【搜索的文件】还是【默认列表】
-	const fileList = (searchFiles.length > 0) ? searchFiles : files
+	// 左侧列表展示【搜索的文件】还是【默认列表】
+	// useEffect(() => {
+	// 	setShowFileList(searchFiles.length > 0 ? searchFiles : files) // 如果搜索框有数据, 就展示搜索的文件, 否则展示默认的文件
+	// 	console.log('列表数据:', showFileList)
+	// },[
+	// 	// 同时依赖 searchFiles 跟 files
+	// 	searchFiles,
+	// 	files,
+	// 	showFileList
+	// ])
 
+	// let showFileList = (searchFiles.length > 0) ? searchFiles : files
+
+	useEffect(() => {
+		setShowFileList(searchFiles.length > 0 ? searchFiles : files) // 如果搜索框有数据, 就展示搜索的文件, 否则展示默认的文件
+		console.log(files, showFileList)
+	}, [searchFiles]) //记得不能依赖 file、showFileList , 不然每次都会渲染回初始化的 files 数据!! 这里只依赖搜索框的数据
 
 
 	// 🌟 点击左侧文件, 打开 docs
@@ -205,10 +221,12 @@ function App() {
 		}
 	}
 
+
 	// 🌟 点击 tab 选项卡, 切换编辑框内容
 	const changeActiveEditContent = (id) => {
 		setActiveEditId(id)
 	}
+
 
 	// 🌟 关闭选项卡
 	const closeActiveEditContent = (id) => {
@@ -244,10 +262,26 @@ function App() {
 
 	// 🔪 删除某篇文档 docs
 	const deleteItem = (id) => {
-		const newFiles = files.filter(file => file.id !== id)
+		// 👇【删除旧的文档】
+		const newFiles = files.filter((file) => {
+			return file.id !== id
+		})
 		setFiles(newFiles) //🚀更新到原来的 files 列表中
-		// 如果删除的这项刚好的当前打开的 tab, 那么应该关闭掉这个 tab
-		closeActiveEditContent(id)
+		setShowFileList(newFiles) //🚀更新到左侧列表中
+
+		closeActiveEditContent(id) 	// 如果删除的这项刚好的当前打开的 tab, 那么应该关闭掉这个 tab
+
+
+		// // 👇【删除刚新建的文档】, 记得把 isNew 清除, 不然在下游 FileList 组件内满足 isNew 条件的话, 就会一直没法退出编辑态!!
+		const newCreateFiles = files.map(file => {
+			if(file.id === id) {
+				file.isNew = false //🚀🚀 记得把 isNew 设置为 false, 否则会一直不显示新文件！！
+			}
+			return file //把修改后的 file 返回给 newFiles
+		})
+
+		setFiles(newCreateFiles)
+		setShowFileList(newCreateFiles)
 	}
 
 
@@ -259,11 +293,13 @@ function App() {
 		setSearchFiles(newFiles)
 	}
 
-	// 🌞 编辑某篇文档的标题
+
+	// 🌞 编辑某篇文档的标题 (重命名)
 	const reName = (id, newTitle) => {
 		const newFiles = files.map(file => {
 			if(file.id === id) {
 				file.title = newTitle
+				file.isNew = false //🚀🚀 记得把 isNew 设置为 false, 否则会一直不显示新文件！！
 			}
 			return file //把修改后的 file 返回给 newFiles
 		})
@@ -273,7 +309,18 @@ function App() {
 
 
 	// ✏️ 新建文件
+	const createFile = () => {
+		const newFile = {
+			isNew: true, //新建的文件, 为了让新建时能够切聚焦到输入框的编辑状态
+			id: uuidv4(),//使用 uuid 库
+			title: `Untitle docs ${files.length + 1}`,
+			body: '初始化内容...',
+			createTime: new Date().getTime() //时间戳
+		}
 
+		setFiles([...files, newFile])// 放入左侧列表
+		setSearchFiles([...files, newFile]) // 放入搜索列表
+	}
 
 	
 	// 🔥正在编辑的 docs 的默认内容 （根据 activeEditId 从所有 files 的 body 中取出数据） => 用来判断编辑状态
@@ -298,10 +345,11 @@ function App() {
 							// editFile={ (id) => { console.log('编辑文档:', id) } } //id 由下层组件传入
 							editFile={openItem}
 							deleteFile={ 
-								(id) => { console.log('删除文档:', id); deleteItem(id) //id 由下层组件传入
+								(id) => { console.log('删除文档:', id);
+								deleteItem(id) //id 由下层组件传入
 							}} 
 							// files={initFilesData}
-							files={fileList}
+							files={showFileList}
 							saveFile={  //【回车】保存新的文档名称
 								 (id, value)=>{console.log(id, value); reName(id, value)}
 							}
@@ -311,6 +359,7 @@ function App() {
 
 					<div className="btn_list">
 						<ButtonItems
+							btnClick={createFile} //新建文档
 							css={customAddStyles} //把 css 样式出传入下一层组件！
 							icon={addIcon}
 							title={'New'}
@@ -327,7 +376,6 @@ function App() {
 					{activeFileContent && //有打开 tab 时, 才显示编辑框
 						<>
 							<TabList
-							className='wll'
 								files={openFiles}
 								activeItem={activeEditId} //选中哪个 tab 
 								unSaveItems={unSaveIds} //

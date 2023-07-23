@@ -15,7 +15,7 @@ export const ButtonItems = ({css, icon, title, btnClick}) => { //👈 customStyl
 
 
 	return (
-		<BtnP>
+		<BtnP onClick={btnClick}>
 			<img src={icon} alt="" style={{width: 18}}/>
 			<span>{title}</span>
 		</BtnP>

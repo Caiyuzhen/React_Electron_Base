@@ -92,23 +92,39 @@ let GroupUL = styled.ul.attrs({
 
 export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 
-	const [editItem, setEditItem] = useState(false) // 判断是否要显示重名的 UI 样式
-	const [value, setValue] = useState('') //编辑文档名
+	const [editItem, setEditItem] = useState(false) // ⚡️判断是否要显示【重命名】的 UI 样式
+	const [value, setValue] = useState('') //输入框的值（编辑文档名）
 	const oInput = useRef(null) //获取 input 框的 DOM, 用于聚焦
-	const enterPressed = useKeyboardHandle(13)	// 👉结合 hook 的抽象, 用来判断对应的键盘 (Esc、Enter) 是否按下了
-	const escPressed = useKeyboardHandle(27)	// 👉结合 hook 的抽象, 用来判断对应的键盘 (Esc、Enter) 是否按下了
+	const enterPressed = useKeyboardHandle(13)	// 结合 hook 的抽象, 用来判断对应的键盘 (Esc、Enter) 是否按下了
+	const escPressed = useKeyboardHandle(27)	// 结合 hook 的抽象, 用来判断对应的键盘 (Esc、Enter) 是否按下了
 
 
 	// 关闭 list 的【编辑状态】
 	const closeListEdit = () => {
 		setEditItem(false)
 		setValue('') //清空输入状态
+
+		const currentFile = files.find(file => file.id === editItem)// ⚡️关闭掉当前正在编辑的文件（包含新创建的）！
+		if(currentFile.isNew) { //如果是个新文件
+			deleteFile(currentFile.id) //删除这个新文件
+		}
 	}
 
+
+	// 🚀 新建文件后, 进入编辑态 🚀
+	useEffect(() => {
+		const newFile = files.find(file => file.isNew) //👈找到新建的文件
+		if(newFile) {
+			setEditItem(newFile.id)
+			setValue(newFile.title)
+		}
+	}, [files]) //依赖 files 的变更
+
+	
 	// 键盘的事件操作
 	useEffect(() => {
 		// 👇抽象后, 用钩子函数判断 ---
-		if(enterPressed && editItem) {
+		if(enterPressed && editItem && value.trim() !== '') { //value.trim() !== '' 表示去除首尾空格, 并且不能为空
 			saveFile(editItem, value) //把【item id】跟【输入框的 value 】给到 App.js 组件
 			closeListEdit() //关闭编辑状态
 		}
@@ -154,7 +170,7 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 							 onClick={ () => {editFile(file.id)}}   //把 id 传递给 App.js, 点后打开这篇文档
 						>
 							{ //列表默认状态
-								(file.id !== editItem) &&  
+								((file.id !== editItem) && !file.isNew) &&   //不是编辑这条数据【并且】不是新文件
 									<>
 										<li
 											className='list-group-item d-flex align-items-center'
@@ -172,7 +188,7 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 											/>
 											<img //删除文档
 												className="delete_btn"
-												onClick={ (e) => {deleteFile(file.id); e.stopPropagation() }}//把 id 传递给 App.js
+												onClick={ (e) => {deleteFile(file.id) }}//把 id 传递给 App.js
 												src={deleteIcon} 
 												style={{width: 16}}
 											/>
@@ -180,7 +196,7 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 									</>
 							}
 							{ //列表编辑状态
-								(file.id === editItem) &&  
+								((file.id === editItem) || file.isNew) &&   //是编辑这条数据, 【或者】是新建数据都进入编辑态度
 									<>
 										<li
 											className='list-group-item d-flex align-items-center'
@@ -196,7 +212,7 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 										<div className="action">
 											<img  //关闭编辑状态
 												className="close_btn"
-												onClick={ (e) => { closeListEdit(); e.stopPropagation() }} //把 id 传递给 App.js
+												onClick={ (e) => { closeListEdit(); e.stopPropagation()}} //把 id 传递给 App.js
 												src={closeIcon} style={{width: 16}}
 											/>
 										</div>
