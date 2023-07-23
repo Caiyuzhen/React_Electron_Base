@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useReducer} from 'react'
 import styled, {css} from 'styled-components'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import SearchBar from './components/SearchBar'
@@ -184,6 +184,7 @@ function App() {
 	const [unSaveIds, setUnSaveIds] = useState([]) // 未保存的文件（docs）信息
 	const [searchFiles, setSearchFiles] = useState([])  // 左侧展示的搜索列表, 与默认的展示列表作区分
 	const [showFileList, setShowFileList] = useState([])
+	const [activeFileContent, setActiveFileContent] = useState('') // 当前正在编辑的 docs 的内容
 
 	// 🌟 获得已打开的文件的信息 => 根据 openId 来判断展示哪个 tab 🔥
 	const openFiles = openIds.map(openId => {
@@ -191,19 +192,7 @@ function App() {
 	})
 	
 
-	// 左侧列表展示【搜索的文件】还是【默认列表】
-	// useEffect(() => {
-	// 	setShowFileList(searchFiles.length > 0 ? searchFiles : files) // 如果搜索框有数据, 就展示搜索的文件, 否则展示默认的文件
-	// 	console.log('列表数据:', showFileList)
-	// },[
-	// 	// 同时依赖 searchFiles 跟 files
-	// 	searchFiles,
-	// 	files,
-	// 	showFileList
-	// ])
-
-	// let showFileList = (searchFiles.length > 0) ? searchFiles : files
-
+	// 🔍 搜索数据
 	useEffect(() => {
 		setShowFileList(searchFiles.length > 0 ? searchFiles : files) // 如果搜索框有数据, 就展示搜索的文件, 否则展示默认的文件
 		console.log(files, showFileList)
@@ -221,8 +210,18 @@ function App() {
 		}
 	}
 
+	// // 🔥正在编辑的 docs 的默认内容 （根据 activeEditId 从所有 files 的 body 中取出数据） => 用来判断编辑状态
+	// const activeFileContent = files.find(file => file.title === activeEditId)  //只会有一个
+	useEffect(() => {
+		const openFile = files.find(file => file.id === activeEditId)
+		console.log(openFile)
 
-	// 🌟 点击 tab 选项卡, 切换编辑框内容
+		setActiveFileContent(openFile)
+		console.log(`打开了第${activeEditId}个文件`)
+	}, [activeEditId])
+
+
+	// 🌟 点击 tab 选项卡, 切换编辑框内容(本质上是切换了 id)
 	const changeActiveEditContent = (id) => {
 		setActiveEditId(id)
 	}
@@ -262,26 +261,30 @@ function App() {
 
 	// 🔪 删除某篇文档 docs
 	const deleteItem = (id) => {
-		// 👇【删除旧的文档】
-		const newFiles = files.filter((file) => {
-			return file.id !== id
+		// 过滤删除旧文档（删除操作）
+		const newFiles = files.filter(file => file.id !== id)
+
+		// 处理新文档(剔除 is New属性), 否则下游组件会一直显示新文档
+		const updatedFiles = newFiles.map(file => {
+			if (file.id === id) {
+				file.isNew = false 
+			}
+			return file
 		})
-		setFiles(newFiles) //🚀更新到原来的 files 列表中
-		setShowFileList(newFiles) //🚀更新到左侧列表中
+
+		setFiles(updatedFiles) //🚀更新到原来的 files 列表中
+		setShowFileList(updatedFiles) //🚀更新到左侧列表中
 
 		closeActiveEditContent(id) 	// 如果删除的这项刚好的当前打开的 tab, 那么应该关闭掉这个 tab
 
+		// 👇【删除旧的文档】
+		// const newFiles = files.filter((file) => {
+		// 	return file.id !== id
+		// })
+		// setFiles(newFiles) //🚀更新到原来的 files 列表中
+		// setShowFileList(newFiles) //🚀更新到左侧列表中
 
-		// // 👇【删除刚新建的文档】, 记得把 isNew 清除, 不然在下游 FileList 组件内满足 isNew 条件的话, 就会一直没法退出编辑态!!
-		const newCreateFiles = files.map(file => {
-			if(file.id === id) {
-				file.isNew = false //🚀🚀 记得把 isNew 设置为 false, 否则会一直不显示新文件！！
-			}
-			return file //把修改后的 file 返回给 newFiles
-		})
-
-		setFiles(newCreateFiles)
-		setShowFileList(newCreateFiles)
+		// closeActiveEditContent(id) 	// 如果删除的这项刚好的当前打开的 tab, 那么应该关闭掉这个 tab
 	}
 
 
@@ -321,10 +324,6 @@ function App() {
 		setFiles([...files, newFile])// 放入左侧列表
 		setSearchFiles([...files, newFile]) // 放入搜索列表
 	}
-
-	
-	// 🔥正在编辑的 docs 的默认内容 （根据 activeEditId 从所有 files 的 body 中取出数据） => 用来判断编辑状态
-	const activeFileContent = files.find(file => file.title === activeEditId)  //只会有一个
 
 
 	return (

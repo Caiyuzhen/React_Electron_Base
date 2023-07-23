@@ -188,7 +188,7 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 											/>
 											<img //删除文档
 												className="delete_btn"
-												onClick={ (e) => {deleteFile(file.id) }}//把 id 传递给 App.js
+												onClick={ (e) => {deleteFile(file.id); e.stopPropagation() }}//把 id 传递给 App.js
 												src={deleteIcon} 
 												style={{width: 16}}
 											/>
