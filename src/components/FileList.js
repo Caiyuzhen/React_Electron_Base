@@ -104,6 +104,7 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 		setEditItem(false)
 		setValue('') //清空输入状态
 
+		// 👇先隐藏
 		const currentFile = files.find(file => file.id === editItem)// ⚡️关闭掉当前正在编辑的文件（包含新创建的）！
 		if(currentFile && currentFile.isNew) { //如果是个新文件
 			deleteFile(currentFile.id) //删除这个新文件
@@ -134,7 +135,7 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 	useEffect(() => {
 		// 👇抽象后, 用钩子函数判断 ---
 		if(enterPressed && editItem && value.trim() !== '') { //value.trim() !== '' 表示去除首尾空格, 并且不能为空
-			saveFile(editItem, value) //把【item id】跟【输入框的 value 】给到 App.js 组件
+			saveFile(editItem, value) //把【item id】跟【输入框的 value 】给到 App.js 组件, editItem 就是 id
 			closeListEdit() //关闭编辑状态
 		}
 		if(escPressed && editItem) {

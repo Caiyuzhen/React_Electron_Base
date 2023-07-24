@@ -13,6 +13,8 @@ import "easymde/dist/easymde.min.css";
 import { useState } from 'react'
 import placeholderImg from '../src/resource/img/placeholder-inspired.png'
 import { v4 as uuidv4 } from 'uuid'; 
+import {mapArr, objToArr} from './utils/helper.js'
+
 
 // 左侧容器样式 （styled-components 语法）
 let LeftDiv = styled.div.attrs({
@@ -178,7 +180,8 @@ const customImportStyles = css
 
 // 右侧容器
 function App() {
-	const [files, setFiles] = useState(initFilesData) // 所有的文件（docs） 信息
+	// const [files, setFiles] = useState(initFilesData) // 所有的文件（docs） 信息
+	const [files, setFiles] = useState(mapArr(initFilesData)) // 所有的文件（docs） 信息
 	const [openIds, setOpenIds] = useState([]) // 当前已打开的所有文件（docs）信息, 比如 1 就是打开了第一个 docs, 1, 2 就是打开了第一二个 docs
 	const [activeEditId, setActiveEditId] = useState('')  // 当前聚焦在哪个 tab 的信息
 	const [unSaveIds, setUnSaveIds] = useState([]) // 未保存的文件（docs）信息
@@ -186,17 +189,32 @@ function App() {
 	const [showFileList, setShowFileList] = useState([])
 	const [activeFileContent, setActiveFileContent] = useState('') // 当前正在编辑的 docs 的内容
 
+
 	// 🌟 获得已打开的文件的信息 => 根据 openId 来判断展示哪个 tab 🔥
 	const openFiles = openIds.map(openId => {
-		return files.find(file => file.id === openId) //同时可能打开多个
+		return files[openId] //👈利用工具函数把数组改成了对象 {}、{}, 因此可以通过 id 取值
+		// return files.find(file => file.id === openId) //同时可能打开多个
 	})
 	
 
 	// 🔍 搜索数据
 	useEffect(() => {
-		setShowFileList(searchFiles.length > 0 ? searchFiles : files) // 如果搜索框有数据, 就展示搜索的文件, 否则展示默认的文件
+		setShowFileList(searchFiles.length > 0 ? searchFiles : objToArr(files)) //👈需要把 files 处理成数组, 因为上边处理成了对象
+		// setShowFileList(searchFiles.length > 0 ? searchFiles : files) // 如果搜索框有数据, 就展示搜索的文件, 否则展示默认的文件
 		console.log(files, showFileList)
 	}, [searchFiles]) //记得不能依赖 file、showFileList , 不然每次都会渲染回初始化的 files 数据!! 这里只依赖搜索框的数据
+
+
+	// // 🔥计算正在编辑的 docs 的默认内容 （根据 activeEditId 从所有 files 的 body 中取出数据） => 用来判断编辑状态
+	// const activeFileContent = files.find(file => file.title === activeEditId)  //只会有一个
+	useEffect(() => {
+		const openFile = files[activeEditId]
+		// const openFile = files.find(file => file.id === activeEditId)
+		console.log(openFile)
+
+		setActiveFileContent(openFile)
+		console.log(`打开了第${activeEditId}个文件`)
+	}, [activeEditId])
 
 
 	// 🌟 点击左侧文件, 打开 docs
@@ -206,19 +224,9 @@ function App() {
 
 		// 将打开的页面添加进 openIds (注意要去重！已经打开的就不加入)
 		if(!openIds.includes(id)) {//如果 openIds 中没有这个 id, 就加入
-			setOpenIds([...openIds, id])
+			setOpenIds([...openIds, id]) // 修改第【id】 项的数据
 		}
 	}
-
-	// // 🔥正在编辑的 docs 的默认内容 （根据 activeEditId 从所有 files 的 body 中取出数据） => 用来判断编辑状态
-	// const activeFileContent = files.find(file => file.title === activeEditId)  //只会有一个
-	useEffect(() => {
-		const openFile = files.find(file => file.id === activeEditId)
-		console.log(openFile)
-
-		setActiveFileContent(openFile)
-		console.log(`打开了第${activeEditId}个文件`)
-	}, [activeEditId])
 
 
 	// 🌟 点击 tab 选项卡, 切换编辑框内容(本质上是切换了 id)
@@ -249,24 +257,32 @@ function App() {
 	// 🌟 编辑 docs 内容（出现红色⭕️）
 	const changeFile = (id, newValue) => { //在编辑时候, 传入 id, 判断是否已经保存过
 		if(!unSaveIds.includes(id)) { // 如果还没有保存过, 就加入
-			setUnSaveIds([...unSaveIds, id])
+			setUnSaveIds([...unSaveIds, id]) // 修改第【id】 项的数据
 		}
 
-		// 更新内容生成 files
-		const newFiles = files.map(file => {
-			if(file.id === id) { //需要更新的文件
-				file.body = newValue 
-			}
-			return file
+		// 👇【未抽离 mapArr 方法前的写法, 处理的是数组】更新内容生成 files
+		// const newFiles = files.map(file => {
+		// 	if(file.id === id) { //需要更新的文件
+		// 		file.body = newValue 
+		// 	}
+		// 	return file
+		// })
+
+		// setFiles(newFiles)
+
+		//🔥🔥转化为 {} 对象之后的写法, 把 files[id] 进行展开, 然后单独修改 body 的数据, 处理的是对象
+		const newFiles = {...files[id], body: newValue} 
+		setFiles({
+			...files, 
+			[id]: newFiles  //👈把新的数据放入 files 中, 以 id: {} 的形式进行存入
 		})
-		setFiles(newFiles)
 	}
 
 
 	// 🔪 删除某篇文档 docs
 	const deleteItem = (id) => {
-		// 过滤删除旧文档（删除操作）
-		const newFiles = files.filter(file => file.id !== id)
+		// 👇过滤删除旧文档（删除操作）
+		const newFiles = objToArr(files).filter(file => file.id !== id)
 
 		// 处理新文档(剔除 is New属性), 否则下游组件会一直显示新文档
 		const updatedFiles = newFiles.map(file => {
@@ -295,17 +311,33 @@ function App() {
 	// 🔍 搜索某篇文档的标题
 	const searchFile = (keyWord) => {
 		console.log('搜索关键字:', keyWord)
-		const newFiles = files.filter(file => file.title.includes(keyWord))
+		const newFiles = objToArr(files).filter(file => file.title.includes(keyWord)) //🔥🔥 因为这里没有传入 id, 所以还是以数组的方式来处理数据
+		// const newFiles = files.filter(file => file.title.includes(keyWord))
 		// setFiles(newFiles)
 		setSearchFiles(newFiles)
 	}
 
 
 	// 🌞 编辑某篇文档的标题 (重命名)
-	const reName = (id, newTitle) => {
-		const newFiles = files.map(file => {
+	const reName = (id, newTitleValue) => {
+		//  🔥🔥转化为 {} 对象之后的写法, ⚡️...files[id] 表示把 files 展开后取[id] 项!!!!!（或者叫将 files 对象中指定键 id 对应的值进行展开）⚡️, 然后单独修改 title、isNew 的数据, 处理的是对象
+		// const newFiles = {...files[id], title: newTitleValue, isNew: false}
+		// setFiles({
+		// 	...files, //先把原来的拿出来
+		// 	[id]: newFiles // 把新的数据放入 files 中, 修改第【id】 项的数据
+		// })
+
+		// 👇【未抽离 mapArr 方法前的写法, 处理的是数组】
+		// 不允许重名
+		const itemName = objToArr(files).find(item => item.title === newTitleValue) //看下标题是否重复
+		if(itemName) { //有重复标题的情况
+			newTitleValue += '_copy'
+			alert('名称重复')
+		}
+
+		const newFiles = objToArr(files).map(file => {
 			if(file.id === id) {
-				file.title = newTitle
+				file.title = newTitleValue
 				file.isNew = false //🚀🚀 记得把 isNew 设置为 false, 否则会一直不显示新文件！！
 			}
 			return file //把修改后的 file 返回给 newFiles
@@ -317,18 +349,24 @@ function App() {
 
 	// ✏️ 新建文件
 	const createFile = () => {
+		const newId = uuidv4() //🔥🔥 使用 uuid 库
 		const newFile = {
 			isNew: true, //新建的文件, 为了让新建时能够切聚焦到输入框的编辑状态
-			id: uuidv4(),//使用 uuid 库
+			id: newId,//使用 uuid 库
 			title: `Untitle docs ${files.length + 1}`,
 			body: '初始化内容...',
 			createTime: new Date().getTime() //时间戳
 		}
 
-		let flag = files.find(file => file.isNew === true) //如果是正在编辑状态的话, 就不给继续新建了
+		// let flag = files.find(file => file.isNew === true) //如果是正在编辑状态的话, 就不给继续新建了
+		let flag = objToArr(files).find(file => file.isNew === true) //如果是正在编辑状态的话, 就不给继续新建了
+		// if(!flag) {
+		// 	setFiles([...files, newFile])// 放入左侧列表
+		// 	setSearchFiles([...files, newFile]) // 放入搜索列表
+		// }
 		if(!flag) {
-			setFiles([...files, newFile])// 放入左侧列表
-			setSearchFiles([...files, newFile]) // 放入搜索列表
+			setFiles({...files, [newId]: newFile})// 放入左侧列表, 以 id: {} 的形式进行存入
+			setSearchFiles({...files, [newId]: newFile}) // 放入搜索列表, 以 id: {} 的形式进行存入
 		}
 	}
 
