@@ -234,10 +234,14 @@ function App() {
 		setOpenIds(retOpen)
 
 		// 剩下的选项卡取第一个
-		if(retOpen.length > 0) { //还有被打开的 tab
-			setActiveEditId(retOpen[0])
-		} else {
-			setActiveEditId('') //没有被打开的 tab
+		if(retOpen.length > 0 && (activeEditId === id)) { //如果【还有余下的被打开的 Tab】, 并且当前【正在被编辑】的 Tab 就【要是被关闭的 Tab】, 那么就把第一个 Tab 设置为当前正在编辑的 Tab 
+			setActiveEditId(retOpen[0]) //定位到第一个 tab
+		} 
+		else if(retOpen.length > 0 && (activeEditId !== id)) { //如果关闭的不是当前正在编辑的 Tab, 那么就不用管
+			setActiveEditId(activeEditId) //不用管, 还是保留原来打开的选项
+		}
+		else {
+			setActiveEditId('') //没有被打开的 tab, 展示空状态
 		}
 	}
 
@@ -321,8 +325,11 @@ function App() {
 			createTime: new Date().getTime() //时间戳
 		}
 
-		setFiles([...files, newFile])// 放入左侧列表
-		setSearchFiles([...files, newFile]) // 放入搜索列表
+		let flag = files.find(file => file.isNew === true) //如果是正在编辑状态的话, 就不给继续新建了
+		if(!flag) {
+			setFiles([...files, newFile])// 放入左侧列表
+			setSearchFiles([...files, newFile]) // 放入搜索列表
+		}
 	}
 
 

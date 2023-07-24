@@ -99,16 +99,25 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 	const escPressed = useKeyboardHandle(27)	// 结合 hook 的抽象, 用来判断对应的键盘 (Esc、Enter) 是否按下了
 
 
-	// 关闭 list 的【编辑状态】
+	// ❌ 关闭 list 的【编辑状态】
 	const closeListEdit = () => {
 		setEditItem(false)
 		setValue('') //清空输入状态
 
 		const currentFile = files.find(file => file.id === editItem)// ⚡️关闭掉当前正在编辑的文件（包含新创建的）！
-		if(currentFile.isNew) { //如果是个新文件
+		if(currentFile && currentFile.isNew) { //如果是个新文件
 			deleteFile(currentFile.id) //删除这个新文件
 		}
 	}
+
+
+	// ✏️✏️ 当正在编辑一个文件名的状态下, 再去点击编辑其他文件名, 此时应该把正在编辑的文件名给保存下来, 然后切换到另一个编辑态
+	useEffect(() => {
+		const newFiles = files.find(file => file.isNew) // 表示新建的文件
+		if(newFiles && editItem !== newFiles.id) { //正在编辑新建的文件 + 点击了其他文件（编辑项不是这个新建的文件）
+			deleteFile(newFiles.id) //删除正在编辑的新建的这项
+		}
+	}, [editItem])
 
 
 	// 🚀 新建文件后, 进入编辑态 🚀
@@ -167,7 +176,9 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 						<div className="cell" 
 							 key={file.id}
 							 //点击文档
-							 onClick={ () => {editFile(file.id)}}   //把 id 传递给 App.js, 点后打开这篇文档
+							 onClick={ () => {editFile(file.id); //把 id 传递给 App.js, 点后打开这篇文档
+											  closeListEdit()  //🚀点击列表时, 关闭正在编辑的状态！避免一边打开一边编辑！
+										}}   
 						>
 							{ //列表默认状态
 								((file.id !== editItem) && !file.isNew) &&   //不是编辑这条数据【并且】不是新文件
@@ -182,7 +193,9 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 											<img //编辑文档名
 												className="edit_btn"
 												onClick={ 
-													(e) => {setEditItem(file.id); e.stopPropagation()} //把 id 传递给 App.js  // e.stopPropagation() 阻止事件冒泡, 不然会触发点击整个 item
+													(e) => {setEditItem(file.id);  //把 id 传递给 App.js  // e.stopPropagation() 阻止事件冒泡, 不然会触发点击整个 item
+															e.stopPropagation()
+													} 
 												} 
 												src={edit} style={{width: 16}}
 											/>
