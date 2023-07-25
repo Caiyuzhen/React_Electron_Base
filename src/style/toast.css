@@ -1,0 +1,31 @@
+.toast {
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 320px;
+	height: 80px;
+	border-radius: 10px;
+	z-index: 10;
+	background-color: rgba(227, 255, 242, 1);
+	border: 1px solid #7f7f7f;
+}
+
+.toast .success {
+	background-color: rgba(227, 255, 242, 1);
+	border: 1px solid #27a98b;
+}
+
+.toast .error {
+	background-color: rgba(255, 221, 221, 1);
+	border: 1px solid #dd5e60;
+}
+
+.top {
+	top: 48px;
+	left: 50vw;
+}
+
+.toast:not(.show) {
+	display: unset;
+  }

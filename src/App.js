@@ -1,4 +1,5 @@
 import React, {useEffect, useReducer} from 'react'
+import ReactDOM from 'react-dom'
 import styled, {css} from 'styled-components'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import SearchBar from './components/SearchBar'
@@ -14,6 +15,7 @@ import { useState } from 'react'
 import placeholderImg from '../src/resource/img/placeholder-inspired.png'
 import { v4 as uuidv4 } from 'uuid'; 
 import {mapArr, objToArr} from './utils/helper.js'
+import Toast, {ToastBase} from './components/Toast'
 
 
 // 左侧容器样式 （styled-components 语法）
@@ -70,6 +72,23 @@ let RightDiv = styled.div.attrs({
 		justify-content: center;
 	}
 `
+
+let ToastContainer = styled.div.attrs({
+	className: 'toast-container'
+})`
+	position: fixed;
+	top: 0;
+	right: 0;
+	z-index: 9999;
+	pointer-events: none;
+	overflow: hidden;
+	max-width: 100%;
+	width: 100%;
+	height: 100%;
+	padding: 0 8px;
+	transition: all 0.3s ease;
+`
+	
 
 
 // 自定义按钮组件的样式
@@ -188,6 +207,7 @@ function App() {
 	const [searchFiles, setSearchFiles] = useState([])  // 左侧展示的搜索列表, 与默认的展示列表作区分
 	const [showFileList, setShowFileList] = useState([])
 	const [activeFileContent, setActiveFileContent] = useState('') // 当前正在编辑的 docs 的内容
+	const [toasts, setToasts] = useState() // toast 组件的数据
 
 
 	// 🌟 获得已打开的文件的信息 => 根据 openId 来判断展示哪个 tab 🔥
@@ -297,14 +317,7 @@ function App() {
 
 		closeActiveEditContent(id) 	// 如果删除的这项刚好的当前打开的 tab, 那么应该关闭掉这个 tab
 
-		// 👇【删除旧的文档】
-		// const newFiles = files.filter((file) => {
-		// 	return file.id !== id
-		// })
-		// setFiles(newFiles) //🚀更新到原来的 files 列表中
-		// setShowFileList(newFiles) //🚀更新到左侧列表中
-
-		// closeActiveEditContent(id) 	// 如果删除的这项刚好的当前打开的 tab, 那么应该关闭掉这个 tab
+		setToasts(Toast.success(3000, '.top'))
 	}
 
 
@@ -373,6 +386,9 @@ function App() {
 
 	return (
 		<div className="App container-fluid px-0">
+			<ToastContainer>
+				{toasts}
+			</ToastContainer>
 			<div className="row">
 				<LeftDiv>
 					<div className="top_container">
