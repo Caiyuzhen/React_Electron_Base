@@ -2,7 +2,9 @@
 // const fs = remote.require('fs').promises
 // const path = remote.require('path')
 // const { fs, path } = window.nodeModules
-const fs = require('@electron/remote').require('fs')
+// const fs = require('@electron/remote').require('fs')
+const fs = require('path-browserify')
+const path = require('path-browserify')
 
 
 

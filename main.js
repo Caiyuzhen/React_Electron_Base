@@ -1,7 +1,7 @@
 const { app, BrowserWindow, contextBridge } = require('electron')
 const isDev = require('electron-is-dev')
 require("@electron/remote/main").initialize() // 初始化远程模块
-	require("@electron/remote/main").enable(mainWindow.webContents) // enable() 方法用于启用指定 webConte
+
 
 let mainWindow
 
@@ -17,7 +17,8 @@ app.on('ready', () => {
 			enableRemoteModule: true, //👈 允许渲染进行使用 Node
 		}
 	})
-
+	
+	require("@electron/remote/main").enable(mainWindow.webContents) // enable() 方法用于启用指定 webConte
 	 // 在 contextBridge 中暴露 Node.js 模块
 	//  contextBridge.exposeInMainWorld('nodeModules', {
 	// 	fs: require('fs'),

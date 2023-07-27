@@ -4,3 +4,5 @@ concurrently 连接多个命令,中间用空格空开
 wait-on 等待某个结果后再去执行后续命令
 cross-env 配置跨平台的环境变量, 不运行 web 结果
 styled-components 自定义样式
+yarn add path-browserify 解决在渲染进程中不能使用 path 跟 fs 的问题
+
