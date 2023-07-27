@@ -1,5 +1,7 @@
-const fs = window.require('fs').promises //🚀记得加上 window！
-// const path = window.require('path') 
+// const { remote } = require('@electron/remote')
+// const fs = remote.require('fs').promises
+// const path = remote.require('path')
+// const { fs, path } = window.nodeModules
 
 
 // 🚀 把 initFilesData 数组转为对象 id:{...}、 id:{} 格式的方式 
