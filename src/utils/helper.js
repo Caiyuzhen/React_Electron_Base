@@ -2,6 +2,8 @@
 // const fs = remote.require('fs').promises
 // const path = remote.require('path')
 // const { fs, path } = window.nodeModules
+const fs = require('@electron/remote').require('fs')
+
 
 
 // 🚀 把 initFilesData 数组转为对象 id:{...}、 id:{} 格式的方式 
