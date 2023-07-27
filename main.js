@@ -1,4 +1,4 @@
-const { app, BrowserWindow, contextBridge } = require('electron')
+const { app, BrowserWindow, contextBridge, ipcMain } = require('electron')
 const isDev = require('electron-is-dev')
 require("@electron/remote/main").initialize() // 初始化远程模块
 
@@ -25,7 +25,11 @@ app.on('ready', () => {
 	// 	path: require('path')
 	// })
 
-	 // dock 栏的图标
+	// 【🚗】使用 contextBridge 暴露 API
+	// contextBridge.exposeInMainWorld('userData', app.getPath)
+
+
+	 // dock 栏的图标 ——————
 	app.dock.setIcon('./src/resource/logo/magicApp@1x.png')
 
 

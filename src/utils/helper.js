@@ -26,28 +26,28 @@ export const objToArr = (obj) => {
 
 
 
-// // 【👀读取】读取文件
-// export const readFile = (path) => {
-// 	return fs.readFile(path, 'utf8')
-// }
+// 【👀读取】读取文件
+export const readFile = (path) => {
+	return fs.readFile(path, 'utf8')
+}
 
 
-// // 【✏️写入】写入文件
-// export const writeFile = (path, content) => {
-// 	return fs.writeFile(path, content, 'utf-8')
-// }
+// 【✏️写入】写入文件
+export const writeFile = (path, content) => {
+	return fs.writeFile(path, content, 'utf-8')
+}
 
 
-// // 【🌫️修改】重命名
-// export const reNameFile = (path, newPath) => {
-// 	return fs.rename(path, newPath)
-// }
+// 【🌫️修改】重命名
+export const reNameFile = (path, newPath) => {
+	return fs.rename(path, newPath)
+}
 
 
-// // 【🗑️删除】删除文件
-// export const deleteFile = (path) => {
-// 	return fs.unlink(path)
-// }
+// 【🗑️删除】删除文件
+export const deleteFile = (path) => {
+	return fs.unlink(path)
+}
 
 
 // 👇测试

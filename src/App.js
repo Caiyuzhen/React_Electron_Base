@@ -14,8 +14,16 @@ import "easymde/dist/easymde.min.css";
 import { useState } from 'react'
 import placeholderImg from '../src/resource/img/placeholder-inspired.png'
 import { v4 as uuidv4 } from 'uuid'; 
-import {mapArr, objToArr} from './utils/helper.js'
-import Toast, {ToastBase} from './components/Toast'
+import Toast, { ToastBase } from './components/Toast'
+import { mapArr, objToArr, readFile, writeFile, reNameFile, deleteFile } from './utils/helper.js'
+
+
+// 👇 使用 yarn add path-browserify 库, 并且需要修改 webpack 配置
+const fs = require('path-browserify')
+const path = require('path-browserify')
+
+
+// 调用主进程暴露的 API
 
 
 // 左侧容器样式 （styled-components 语法）
@@ -209,6 +217,10 @@ function App() {
 	const [activeFileContent, setActiveFileContent] = useState('') // 当前正在编辑的 docs 的内容
 	const [toasts, setToasts] = useState() // toast 组件的数据
 
+	// 存放文件的磁盘目录
+	// const savedPath = window.userData.getPath('userData')
+	const savedPath = '/Users/aic/Desktop/React_Electron_Base/src/data'
+
 
 	// 🌟 获得已打开的文件的信息 => 根据 openId 来判断展示哪个 tab 🔥
 	const openFiles = openIds.map(openId => {
@@ -332,7 +344,7 @@ function App() {
 
 
 	// 🌞 编辑某篇文档的标题 (重命名)
-	const reName = (id, newTitleValue) => {
+	const saveName = (id, newTitleValue) => {
 		//  🔥🔥转化为 {} 对象之后的写法, ⚡️...files[id] 表示把 files 展开后取[id] 项!!!!!（或者叫将 files 对象中指定键 id 对应的值进行展开）⚡️, 然后单独修改 title、isNew 的数据, 处理的是对象
 		// const newFiles = {...files[id], title: newTitleValue, isNew: false}
 		// setFiles({
@@ -411,7 +423,7 @@ function App() {
 							// files={initFilesData}
 							files={showFileList}
 							saveFile={  //【回车】保存新的文档名称
-								 (id, value)=>{console.log(id, value); reName(id, value)}
+								(id, value)=>{console.log(id, value); saveName(id, value)}
 							}
 						>
 						</FileList>
