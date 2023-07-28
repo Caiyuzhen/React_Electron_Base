@@ -18,10 +18,14 @@ import Toast, { ToastBase } from './components/Toast'
 import { mapArr, objToArr, readFile, writeFile, reNameFile, deleteFile } from './utils/helper.js'
 
 
-// 👇 使用 yarn add path-browserify 库, 并且需要修改 webpack 配置
+// 👇 调用【Node】的能力, 使用 yarn add path-browserify 库, 并且需要修改 webpack 配置
 const fs = require('path-browserify')
 const path = require('path-browserify')
 
+
+// 👇 调用【主进程】的模块！！☕️☕️
+const remote = window.require('electron')
+// console.log('remote:', remote)
 
 // 调用主进程暴露的 API
 

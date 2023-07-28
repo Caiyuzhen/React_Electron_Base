@@ -3,7 +3,7 @@ const isDev = require('electron-is-dev')
 require("@electron/remote/main").initialize() // 初始化远程模块
 
 
-let mainWindow
+let mainWindow //主进程
 
 
 app.on('ready', () => {
