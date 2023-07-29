@@ -91,6 +91,7 @@ module.exports = function (webpackEnv) {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
 
+
   // Variable used for enabling profiling in Production
   // passed into alias object. Uses a flag if passed into the build command
   const isEnvProductionProfile =
@@ -191,6 +192,9 @@ module.exports = function (webpackEnv) {
     // Webpack noise constrained to errors and warnings
     stats: 'errors-warnings',
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
+	externals: {
+		'electron': 'require("electron")'
+	},
     // Stop compilation early in production
     bail: isEnvProduction,
     devtool: isEnvProduction
@@ -294,7 +298,8 @@ module.exports = function (webpackEnv) {
     },
     resolve: {
 		fallback: {
-			"path": require.resolve("path-browserify")
+			"path": require.resolve("path-browserify"),
+			fs: require.resolve('fs'),
 		},
       // This allows you to set a fallback for where webpack should look for modules.
       // We placed these paths second because we want `node_modules` to "win"

@@ -18,16 +18,40 @@ import Toast, { ToastBase } from './components/Toast'
 import { mapArr, objToArr, readFile, writeFile, reNameFile, deleteFile } from './utils/helper.js'
 
 
+
 // 👇 调用【Node】的能力, 使用 yarn add path-browserify 库, 并且需要修改 webpack 配置
 const fs = require('path-browserify')
 const path = require('path-browserify')
 
 
-// 👇 调用【主进程】的模块！！☕️☕️
-const remote = window.require('electron')
-// console.log('remote:', remote)
+// 👇 调用【主进程】的模块！！🌟🌟
+const electron = window.require('electron')
+const { app } = require('@electron/remote') 
+const { getPath } = require('@electron/remote').app
+const { ipcRenderer } = window.require('electron');
 
-// 调用主进程暴露的 API
+
+
+console.log(
+	'electron', electron, '\n', 
+	'app', app, '\n',
+	'getPath', getPath
+)
+
+
+window.onload = function() {
+
+	console.log('🔥');
+  
+	(function() {
+		ipcRenderer.on('api', (event, data) => {
+			console.log('⚡️获得了主进程的 api:', data)
+		})
+	})()
+}
+// const savedPath = getPath('zen')
+// const ipcRenderer = window.require('electron').ipcRenderer;
+
 
 
 // 左侧容器样式 （styled-components 语法）
@@ -222,8 +246,7 @@ function App() {
 	const [toasts, setToasts] = useState() // toast 组件的数据
 
 	// 存放文件的磁盘目录
-	// const savedPath = window.userData.getPath('userData')
-	const savedPath = '/Users/aic/Desktop/React_Electron_Base/src/data'
+	// const savedPath = app.getPath('Users') + '/zen/myDocsData '
 
 
 	// 🌟 获得已打开的文件的信息 => 根据 openId 来判断展示哪个 tab 🔥
