@@ -1,20 +1,22 @@
 const { app, BrowserWindow, ipcRenderer, contextBridge, ipcMain } = require('electron')
 const isDev = require('electron-is-dev')
-// require("@electron/remote/main").initialize() // 初始化远程模块
+const path = require('path')
 const remote = require("@electron/remote/main")
+const { getPath } = require('@electron/remote/main') // 引入 getPath
+// require("@electron/remote/main").initialize() // 初始化远程模块
+
+
 
 
 let mainWindow //主进程
 
 
-
 app.on('ready', () => {
 	mainWindow = new BrowserWindow({
-		width: 1024,
-		height: 768,
+		width: 1440,
+		height: 900,
 		minWidth: 600,
 		webPreferences: {
-			preload: path.join(__dirname, 'App.js'),
 			nodeIntegration: true, //👈 允许渲染进行使用 Node
 			enableRemoteModule: true, //👈 允许渲染进行使用 Node
 			contextIsolation: false, //👈 允许渲染进行使用 Node
@@ -23,27 +25,19 @@ app.on('ready', () => {
 	
 	remote.initialize()  // 初始化远程模块
 	remote.enable(mainWindow.webContents) // enable() 方法用于启用指定 webConte
-	 // 在 contextBridge 中暴露 Node.js 模块
-
-
-
-	// 公开的API
-	const api = {
-		// 示例方法
-		getPath: async () => {
-			const response = await ipcRenderer.invoke('get-path')
-			return response;
-		}
-	}
-
-	// 将 API 公开给渲染进程
-	ipcMain.on('msg', (e, data) => { 
-		console.log(data) // 接收渲染进程发来的异步消息 data
 	
-		// 往渲染进程发送消息
-		e.sender.send('api', api)
-	})
-	
+
+
+
+	//  在 主进程 中暴露 Node.js 模块, 将 API 公开给渲染进程
+	// ipcMain.on('generateAPI', (e, data) => {
+	// 	const savedPath = getPath('Users') + '/zen/myDocsData ' // 获取到的是用户的文档目录
+	// 	event.returnValue = savedPath
+	// })
+	  
+
+		  
+
 
 
 	 // dock 栏的图标 ——————

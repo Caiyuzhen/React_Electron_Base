@@ -135,11 +135,10 @@ export default FileList = ({files, editFile, saveFile, deleteFile}) => {
 	useEffect(() => {
 		// 👇抽象后, 用钩子函数判断 ---
 		if(enterPressed && editItem && value.trim() !== '') { //value.trim() !== '' 表示去除首尾空格, 并且不能为空
-			// 或许文件, 判断是否是新文件
-			const file = files.find(file => file.id === editItem) // editItem 就是 id
-			console.log('拿到了新编辑的的这项:', file)
-
-			saveFile(editItem, value) //把【item id】跟【输入框的 value 】给到 App.js 组件, editItem 就是 id
+			// 判断是否是新文件
+			const file = files.find(file => file.id === editItem) // editItem 就是 id, 为了判断是否是新文件
+			// console.log('拿到了新编辑的的这项:', file)
+			saveFile(editItem, value, file.isNew) //把【item id】跟【输入框的 value 】以及 【isNew】给到 App.js 组件, editItem 就是 id
 			closeListEdit() //关闭编辑状态
 		}
 		if(escPressed && editItem) {

@@ -17,14 +17,11 @@ import { v4 as uuidv4 } from 'uuid';
 import Toast, { ToastBase } from './components/Toast'
 import { mapArr, objToArr, readFile, writeFile, reNameFile, deleteFile } from './utils/helper.js'
 
-
-
 // 👇 调用【Node】的能力, 使用 yarn add path-browserify 库, 并且需要修改 webpack 配置
 const fs = require('path-browserify')
 const path = require('path-browserify')
 
-
-// 👇 调用【主进程】的模块！！🌟🌟
+// 👇 调用【主进程】的模块！！
 const electron = window.require('electron')
 const { app } = require('@electron/remote') 
 const { getPath } = require('@electron/remote').app
@@ -35,22 +32,9 @@ const { ipcRenderer } = window.require('electron');
 console.log(
 	'electron', electron, '\n', 
 	'app', app, '\n',
-	'getPath', getPath
+	// 'getPath', getPath
 )
 
-
-window.onload = function() {
-
-	console.log('🔥');
-  
-	(function() {
-		ipcRenderer.on('api', (event, data) => {
-			console.log('⚡️获得了主进程的 api:', data)
-		})
-	})()
-}
-// const savedPath = getPath('zen')
-// const ipcRenderer = window.require('electron').ipcRenderer;
 
 
 
@@ -245,8 +229,30 @@ function App() {
 	const [activeFileContent, setActiveFileContent] = useState('') // 当前正在编辑的 docs 的内容
 	const [toasts, setToasts] = useState() // toast 组件的数据
 
-	// 存放文件的磁盘目录
-	// const savedPath = app.getPath('Users') + '/zen/myDocsData '
+
+	const savePath = '/Users/zen/myDocsData'
+
+
+
+	// 🚀🚀 获得主进程中暴露的方法
+	// const renderAPI = async () => {
+	// 	const savedPath = await ipcRenderer.invoke('generateAPI', (e, data) => {
+	// 		console.log('获得了数据:', data)
+	// 	})
+	// 	return savedPath
+	// }
+	
+	// // 🚀🚀 调用主进程中的方法
+	// useEffect(() => {
+	// 	renderAPI().then((res) => {
+	// 		console.log('🚀 Saved path:', res)
+	// 	}).catch((error) => {
+	// 		console.error('Error:', error)
+	// 	})
+	// }, [])
+
+
+
 
 
 	// 🌟 获得已打开的文件的信息 => 根据 openId 来判断展示哪个 tab 🔥
@@ -371,7 +377,7 @@ function App() {
 
 
 	// 🌞 编辑某篇文档的标题 (重命名)
-	const saveName = (id, newTitleValue) => {
+	const saveName = (id, newTitleValue, isNew) => {
 		//  🔥🔥转化为 {} 对象之后的写法, ⚡️...files[id] 表示把 files 展开后取[id] 项!!!!!（或者叫将 files 对象中指定键 id 对应的值进行展开）⚡️, 然后单独修改 title、isNew 的数据, 处理的是对象
 		// const newFiles = {...files[id], title: newTitleValue, isNew: false}
 		// setFiles({
@@ -394,6 +400,18 @@ function App() {
 			}
 			return file //把修改后的 file 返回给 newFiles
 		})
+
+		// if(isNew) {
+		// 	// 执行创建逻辑在磁盘中创建文件
+		// 	writeFile(path.join(savePath, `${newTitleValue}.md`), files[id].body).then(() => { //写入的位置、名称、内容
+		// 		setFiles({...files, [id]: newFiles})
+		// 	})
+		// } else {
+		// 	// 执行更新 name 的逻辑
+		// 	// reNameFile(path.join(savePath, `${files[id].title}.md`), path.join(savePath, `${newTitleValue}.md`)).then(() => {
+		// 	// 	setFiles({...files, [id]: newFiles})
+		// 	// })
+		// }
 
 		setFiles(newFiles)
 	}
